@@ -48,4 +48,10 @@ ALSO THE ROUTING WAS SO DAMN HARD EITHER CAUSE THE DEV BOARDS PINS ARE REALLY CL
 
 i figured it out tho
 
+Major time blocks:
+- The routing thing (seen above)
+- Eink display doesnt have a footprint, had to rickety my own (mostly for mounting holes). Specially bad bc the blueprint for it doesnt include size of mounting holes, so had to guestimate it.
+- Draw silkscreen. Deadass spent half an hour on a dumpster fire.
+- Not understanding I2c and spi protocols, and subsequently the optimal wiring for those protocols on the specific model of esp im using
+
 [Timelapse](https://lookout.hackclub.com/api/media/ab253eab-6916-4b51-80e0-6cfc3def7fb4/video.mp4)
