@@ -1,5 +1,6 @@
 # WeaStat
 ### Is probably what im going to call it ignore the repo name 
+Dear reviewers, current readme is prototype. When I build the project irl most photos will be replaced, instructions may become more specific/helpful, and this message will be removed.
 
 ## Premise
 A pcb with an eink display that shows outside temperatures with a free weather api, and shows inside temperatures with a bme280. All powered with a 18650 battery, attempting to minimize battery drain.
@@ -23,4 +24,7 @@ Made by me, for Hack Club Half Life
 
 If you have different parts than the pcb assumes, you can edit the [.kicad_pcb file](https://github.com/NestOfGhosts/EInk-Weather-Display/blob/main/Pcb%20Files/weatstat.kicad_pcb) in KiCad with the footprints of your actual parts.
 
-## TBC
+## Build Steps
+
+### Firmware
+- Get firmware from INSERT LINK
