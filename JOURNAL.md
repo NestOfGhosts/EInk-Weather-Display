@@ -19,7 +19,7 @@
 3. [2026-11-04: Finished pcb, changed tier, and started readme.](#2026-11-04-finished-pcb-changed-tier-and-started-readme)
 4. [2026-11-06: Work session](#2026-11-06-work-session)
 5. [2026-11-07: figured out basic code plan and finished readme. Also had to reroute a bit bc i did display backwards](#2026-11-07-figured-out-basic-code-plan-and-finished-readme-a)
-6. [2026-11-07: just finalized code planning. I proceed to do some hackatime tracked coding](#2026-11-07-just-finalized-code-planning-i-proceed-to-do-some)
+6. [2026-11-07: just finalized code planning.](#2026-11-07-just-finalized-code-planning)
 
 ## Design
 
@@ -73,10 +73,10 @@ figured out basic code plan and finished readme. Also had to reroute a bit bc i 
 
 [Timelapse](https://lookout.hackclub.com/api/media/84dc4c19-b900-44d7-853e-0670704a3608/video.mp4)
 
-### 2026-11-07: just finalized code planning. I proceed to do some hackatime tracked coding
+### 2026-11-07: just finalized code planning.
 
 **0.12h**
 
-just finalized code planning. I proceed to do some hackatime tracked coding
+just finalized code planning.
 
 [Timelapse](https://lookout.hackclub.com/api/media/fddef280-0be5-4cb3-8857-079132cdb7aa/video.mp4)
