@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Weather setup</title>
+</head>
+<body>
+<form action="/save" method="post">
+  <p>Latitude<br><input name="lat" type="number" step="any" min="-90" max="90" required></p>
+  <p>Longitude<br><input name="lon" type="number" step="any" min="-180" max="180" required></p>
+  <p>WiFi name<br><input name="ssid" type="text" required></p>
+  <p>WiFi password<br><input name="pass" type="password" placeholder="leave blank to keep"></p>
+  <p>Refresh (minutes, 0 = off)<br><input name="refresh" type="number" min="0" step="1" required></p>
+  <button type="submit">Save</button>
+</form>
+<script>
+fetch('/settings').then(r => r.json()).then(d => {
+  for (const k in d) {
+    const el = document.querySelector('[name="' + k + '"]');
+    if (el) el.value = d[k];
+  }
+});
+</script>
+</body>
+</html>

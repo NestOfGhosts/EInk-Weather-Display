@@ -7,8 +7,8 @@ const GFXfont* const minFont = &FreeMonoBold9pt7b; // copy your font choice with
 const GFXfont* const thinFont = &FreeMono9pt7b;
 #include <Fonts/FreeMonoBold12pt7b.h>
 const GFXfont* const midFont = &FreeMonoBold12pt7b;
-#include <Fonts/FreeMonoBold24pt7b.h>
-const GFXfont* const maxFont = &FreeMonoBold24pt7b;
+#include <Fonts/FreeMonoBold18pt7b.h>
+const GFXfont* const maxFont = &FreeMonoBold18pt7b;
 
 
 // Settings below can be edited in the future using config, only defaults here

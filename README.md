@@ -32,10 +32,10 @@ Print holder from [Holder Files](https://github.com/NestOfGhosts/EInk-Weather-Di
 
 ### Firmware
 #### Instructions for windows. Figure out equivalent actions for other OSs, and do them :)
-#### You also need to be using a chromium based browser. No firefox or zen browser I'm afraid.
-1. Flash it by going to INSERT LINK
-2. Set the esp32 to bootloader mode by resetting it and setting GPIO0 to LOW (grounding gpio0). You may also use any "boot" buttons if your esp32 has it.
-3. Open "Device Manager" (In windows)
+1. Download Visual Studio Code, and in VSCode's extensions sidebar install Platformio.
+2. Clone the Firmware Files folder, and open it in VSCode (make sure to trust the workspace)
+3. Set the esp32 to bootloader mode by resetting it and setting GPIO0 to LOW (grounding gpio0). You may also use any "boot" buttons if your esp32 has it.
+4. (Optional) Open "Device Manager" (In windows)
 
 <img width="946" height="910" alt="image" src="https://github.com/user-attachments/assets/72be168f-b337-4fc3-aea7-05ad9f12dce4" />
 
@@ -45,8 +45,11 @@ Print holder from [Holder Files](https://github.com/NestOfGhosts/EInk-Weather-Di
 
 - Take note of any new devices  
 
-4. In the website, click install. Accept the serial permissions, then when it asks you to select a com port, select the one you took note of earlier.
-5. Wait for it to finish
+5. Click the house button at the bottom. Open the Firmware Files folder from earlier. Then, (with your board plugged in), click on the alien on the sidebar. Click "Build Filesystem", wait for finish, then click upload filesystem image.
+
+![alt text](image.png)
+
+6. Wait for it to finish. Finally, click the checkmark at the bottom, then when it completes press the right arrow.
 
 Wow ur done flashing.
 

@@ -11,6 +11,7 @@
 #include <WiFiClientSecure.h> // Lets arduino read http*S* info
 #include <ArduinoJson.h> // Parses(reads) json
 #include <GxEPD2_BW.h> // Black & White epaper library
+#include <Adafruit_BME280.h>
 #include "config.h" // config stuff
 
 GxEPD2_BW<GxEPD2_290_BS, GxEPD2_290_BS::HEIGHT> display(GxEPD2_290_BS(5,4,2,12));
@@ -18,6 +19,7 @@ Preferences settings;
 WebServer server(80);
 RTC_DATA_ATTR bool localyn = 0;
 DNSServer configServer;
+Adafruit_BME280 bme;
 const int refresh = GPIO_NUM_13;
 const int changeMode = GPIO_NUM_14;
 bool saved = false;
@@ -87,7 +89,7 @@ void drawWeather(String time, float temp, float feels, int clud, float rain, boo
     display.setCursor(22, 108);
     display.print(String(rain,1));
     // string 14
-    rightAlign(String(rainChance) + "% " + String(rainTotal) + "mm", 108);
+    rightAlign(String(rainChance) + "% " + String(rainTotal,1 ) + "mm", 108);
     
     display.display();
 }
@@ -96,7 +98,6 @@ void drawWeather(String time, float temp, float feels, int clud, float rain, boo
 void setup() {
   pinMode(refresh, INPUT_PULLUP);
   pinMode(changeMode, INPUT_PULLUP);
-  esp_sleep_wakeup_cause_t cause = esp_sleep_get_wakeup_cause();
   display.init(115200);
   display.setRotation(1);
   display.setFullWindow();
@@ -132,7 +133,8 @@ void setup() {
     }
     esp_restart();
   }
-  else if (digitalRead(refresh) == LOW && digitalRead(changeMode) == HIGH) {
+  else if (digitalRead(refresh) == HIGH && digitalRead(changeMode) == LOW) {
+    localyn = !localyn;
     if (localyn == false) {
       settings.begin("weather", true);
       String ssid = settings.getString("ssid", "");
@@ -149,6 +151,7 @@ void setup() {
       if (WiFi.status() != WL_CONNECTED) {
         centerText("Connection Failed D:");
         delay(15000);
+        localyn == true;
         esp_restart();
       }
       String url = "https://api.open-meteo.com/v1/forecast?latitude=" + String(lat, 4) + "&longitude=" + String(lon,4) + "&daily=precipitation_probability_max,precipitation_sum,snowfall_sum,apparent_temperature_max,apparent_temperature_min&current=temperature_2m,apparent_temperature,cloud_cover,precipitation&timezone=auto&forecast_days=1";
@@ -172,23 +175,131 @@ void setup() {
           float minTemp = temp["daily"]["apparent_temperature_min"][0];
           drawWeather(time,t,appTemp,cloudPer,currPerc,snowyn,percProb,totPerc,maxTemp,minTemp);
           http.end();
-          localyn == true;
           sleepy();
         }
         else {
           centerText(parseCode.c_str());
           delay(15000);
+          localyn = true;
           esp_restart();
         }
       }
       else {
         centerText("Server Connection Failed D:");
         delay(15000);
+        localyn = true;
         esp_restart();
       }
     }
     else {
-
+      Wire.begin(21,22);
+      if (bme.begin(0x76) == true) {
+        bme.setSampling(Adafruit_BME280::MODE_FORCED);
+        bme.takeForcedMeasurement();
+        float temp = bme.readTemperature();
+        float hum = bme.readHumidity();
+        display.fillScreen(GxEPD_WHITE);
+        display.setFont(maxFont);
+        int16_t tbx, tby;
+        uint16_t tbw, tbh;
+        display.getTextBounds("Temp: " + String(temp,1) + "C",0,0, &tbx, &tby, &tbw, &tbh);
+        display.setCursor((display.width() - tbw)/2 - tbx, 50);
+        display.print("Temp: " + String(temp,1) + "C");
+        display.getTextBounds("Humid: " + String(hum,1) + "%",0,0,&tbx,&tby,&tbw,&tbh);
+        display.setCursor((display.width() - tbw)/2 - tbx, 88);
+        display.print("Humid: " + String(hum,1) + "%");
+        display.display();
+        sleepy();
+      }
+      else {
+        centerText("Sensor Failed :(");
+        delay(15000);
+        sleepy();
+      }
+    }
+  }
+  else {
+    if (localyn == false) {
+      settings.begin("weather", true);
+      String ssid = settings.getString("ssid", "");
+      String pass = settings.getString("pass", "");
+      float lat = settings.getFloat("lat", defaultLat);
+      float lon = settings.getFloat("lon", defaultLon);
+      settings.end();
+      WiFi.mode(WIFI_STA);
+      WiFi.begin(ssid.c_str(), pass.c_str());
+      unsigned long current = millis();
+      while (WiFi.status() != WL_CONNECTED && millis() - current < 15000) {
+        delay(200);
+      }
+      if (WiFi.status() != WL_CONNECTED) {
+        centerText("Connection Failed D:");
+        delay(15000);
+        localyn = true;
+        esp_restart();
+      }
+      String url = "https://api.open-meteo.com/v1/forecast?latitude=" + String(lat, 4) + "&longitude=" + String(lon,4) + "&daily=precipitation_probability_max,precipitation_sum,snowfall_sum,apparent_temperature_max,apparent_temperature_min&current=temperature_2m,apparent_temperature,cloud_cover,precipitation&timezone=auto&forecast_days=1";
+      WiFiClientSecure client;
+      client.setInsecure();
+      HTTPClient http;
+      http.begin(client,url);
+      if (http.GET() == 200) {
+        JsonDocument temp;
+        DeserializationError parseCode = deserializeJson(temp, http.getString());
+        if (parseCode == DeserializationError::Ok) {
+          String time = temp["current"]["time"].as<String>().substring(11,16);
+          float t = temp["current"]["temperature_2m"];
+          float appTemp = temp["current"]["apparent_temperature"];
+          int cloudPer = temp["current"]["cloud_cover"];
+          float currPerc = temp["current"]["precipitation"];
+          int percProb = temp["daily"]["precipitation_probability_max"][0];
+          bool snowyn = (temp["daily"]["snowfall_sum"][0].as<float>() > 1 ? true : false);
+          float totPerc = temp["daily"]["precipitation_sum"][0];
+          float maxTemp = temp["daily"]["apparent_temperature_max"][0];
+          float minTemp = temp["daily"]["apparent_temperature_min"][0];
+          drawWeather(time,t,appTemp,cloudPer,currPerc,snowyn,percProb,totPerc,maxTemp,minTemp);
+          http.end();
+          sleepy();
+        }
+        else {
+          centerText(parseCode.c_str());
+          delay(15000);
+          localyn = true;
+          esp_restart();
+        }
+      }
+      else {
+        centerText("Server Connection Failed D:");
+        delay(15000);
+        localyn = true;
+        esp_restart();
+      }
+    }
+    else {
+      Wire.begin(21,22);
+      if (bme.begin(0x76) == true) {
+        bme.setSampling(Adafruit_BME280::MODE_FORCED);
+        bme.takeForcedMeasurement();
+        float temp = bme.readTemperature();
+        float hum = bme.readHumidity();
+        display.fillScreen(GxEPD_WHITE);
+        display.setFont(maxFont);
+        int16_t tbx, tby;
+        uint16_t tbw, tbh;
+        display.getTextBounds("Temp: " + String(temp,1) + "C",0,0, &tbx, &tby, &tbw, &tbh);
+        display.setCursor((display.width() - tbw)/2 - tbx, 50);
+        display.print("Temp: " + String(temp,1) + "C");
+        display.getTextBounds("Humid: " + String(hum,1) + "%",0,0,&tbx,&tby,&tbw,&tbh);
+        display.setCursor((display.width() - tbw)/2 - tbx, 88);
+        display.print("Humid: " + String(hum,1) + "%");
+        display.display();
+        sleepy();
+      }
+      else {
+        centerText("Sensor Failed :(");
+        delay(15000);
+        sleepy();
+      }
     }
   }
 }
