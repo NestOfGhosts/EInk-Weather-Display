@@ -1,6 +1,8 @@
 # WeaStat
 ### Is probably what im going to call it ignore the repo name 
 Dear reviewers, current readme is prototype. When I build the project irl most photos will be replaced, instructions may become more specific/helpful, and this message will be removed.
+<img width="1278" height="406" alt="image" src="https://github.com/user-attachments/assets/d18dc72f-1c21-4f2a-b9ee-9f1ac4bd24f0" />
+
 
 ## Premise
 A pcb with an eink display that shows outside temperatures with a free weather api, and shows inside temperatures with a bme280. All powered with a 18650 battery, attempting to minimize battery drain.
